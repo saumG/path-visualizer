@@ -1,9 +1,20 @@
 .node {
   width: 25px;
   height: 25px;
-  outline: 1px solid rgb(175, 216, 248);
+
+  border-top: 1px solid rgb(175, 216, 248);
+  border-left: 1px solid rgb(175, 216, 248);
   display: inline-block;
   vertical-align: top; /* Add this line */
+}
+
+/* Add these styles */
+.grid > div:last-child .node {
+  border-bottom: 1px solid rgb(175, 216, 248);
+}
+
+.grid > div .node:last-child {
+  border-right: 1px solid rgb(175, 216, 248);
 }
 
 .node-finish {
