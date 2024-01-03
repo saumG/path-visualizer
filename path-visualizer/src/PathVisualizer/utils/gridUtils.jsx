@@ -63,6 +63,9 @@ export const updateGridNode = (
   }
 ) => {
   const newGrid = grid.slice(); // Create a shallow copy of the grid
+
+  console.log(row);
+  console.log(col);
   const node = newGrid[row][col]; // Get the node from the grid
   let newNode = node;
 
@@ -104,7 +107,9 @@ export const clearPath = (visitedNodesInOrder, nodesInShortestPathOrder) => {
     let element = document.getElementById(`node-${node.row}-${node.col}`);
     element.classList.remove("node-visited");
 
-    console.log("removed visited class for node " + node.row + "-" + node.col);
+    console.log("cleared visited node classes");
+
+    // console.log("removed visited class for node " + node.row + "-" + node.col);
   }
 
   for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
@@ -112,9 +117,10 @@ export const clearPath = (visitedNodesInOrder, nodesInShortestPathOrder) => {
     let element = document.getElementById(`node-${node.row}-${node.col}`);
     element.classList.remove("node-shortest-path");
 
-    console.log(
-      "removed shortest path class for node " + node.row + "-" + node.col
-    );
+    // console.log(
+    //   "removed shortest path class for node " + node.row + "-" + node.col
+    // );
+    console.log("cleared shortest path node classes");
   }
 };
 

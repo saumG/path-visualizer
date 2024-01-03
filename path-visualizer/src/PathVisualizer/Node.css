@@ -30,14 +30,18 @@
   max-height: 90%; /* Icon height is 100% of the node */
   opacity: 1; /* Adjust transparency as needed */
 }
-/* 
-.node-finish {
-  background-color: red;
+
+.node-weight {
+  max-width: auto; /* Icon width is 100% of the node */
+  max-height: 80%; /* Icon height is 100% of the node */
+  opacity: 1; /* Adjust transparency as needed */
 }
 
-.node-start {
-  background-color: rgb(0, 255, 0);
-} */
+.node-start,
+.node-finish,
+.node-weight {
+  user-select: none;
+}
 
 .node-wall {
   background-color: rgb(12, 53, 71);

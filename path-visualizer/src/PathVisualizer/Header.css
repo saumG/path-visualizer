@@ -67,4 +67,30 @@
   color: #ff9500;
 }
 
+.toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  padding: 4px 8px;
+  gap: 8px;
+  border: 2px solid transparent;
+  text-transform: uppercase;
+  border-radius: 8px;
+}
+
+.toggle-button:hover {
+  border: 2px solid white;
+}
+
+.toggle-button.walls-active {
+  background-color: #007bff; /* Blue for walls */
+  color: white;
+}
+
+.toggle-button.weights-active {
+  background-color: #28a745; /* Green for weights */
+  color: white;
+}
+
 /* Adjust the styles as needed */

@@ -4,6 +4,7 @@ import "./Node.css";
 
 import finishIcon from "./images/node-finish.png";
 import startIcon from "./images/node-start.png";
+import weightIcon from "./images/weight.png";
 
 // Definition of the Node class component
 export default class Node extends Component {
@@ -14,6 +15,7 @@ export default class Node extends Component {
       isFinish, // Boolean to indicate if this node is the finish node
       isStart, // Boolean to indicate if this node is the start node
       isWall, // Boolean to indicate if this node is a wall
+      isWeight, // Boolean to indicate if this node is a weight
       onMouseDown, // Function to handle mouse down event
       onMouseEnter, // Function to handle mouse enter event
       onMouseUp, // Function to handle mouse up event
@@ -30,6 +32,8 @@ export default class Node extends Component {
       ? "node-start" // Class for start node
       : isWall
       ? "node-wall" // Class for wall node
+      : isWeight
+      ? "node-weight" // Class for weight node
       : "";
 
     let icon = null;
@@ -48,6 +52,15 @@ export default class Node extends Component {
           src={finishIcon}
           alt="Finish"
           className="node-finish node-icon"
+          draggable="false"
+        />
+      );
+    } else if (isWeight) {
+      icon = (
+        <img
+          src={weightIcon}
+          alt="Weight"
+          className="node-weight node-icon"
           draggable="false"
         />
       );
