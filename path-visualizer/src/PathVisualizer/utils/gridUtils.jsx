@@ -51,77 +51,72 @@ const createNode = (
 };
 
 // Function to toggle the wall state of a node in the grid
-export const updateGridNode = (
+export const updateGridState = (
   grid,
+  startCoords,
+  finishCoords,
   row,
   col,
-  {
-    toggleWall = false,
-    toggleWeight = false,
-    movingStartNode = false,
-    movingFinishNode = false,
-  }
+  options
 ) => {
-  const newGrid = grid.slice(); // Create a shallow copy of the grid
+  const newGrid = grid.map((innerRow) => innerRow.slice());
+  const node = newGrid[row][col];
 
-  console.log(row);
-  console.log(col);
-  const node = newGrid[row][col]; // Get the node from the grid
-  let newNode = node;
+  let newStartCoords = startCoords;
+  let newFinishCoords = finishCoords;
 
-  if (toggleWall) {
-    newNode = {
-      ...node,
-      isWall: !node.isWall,
-      isWeight: false,
-    };
-  } else if (toggleWeight) {
-    newNode = {
-      ...node,
-      isWall: false,
-      isWeight: !node.isWeight,
-    };
-  } else if (movingStartNode) {
-    newNode = {
-      ...node,
-      isWall: false,
-      isWeight: false,
-      isStart: !node.isStart,
-    };
-  } else if (movingFinishNode) {
-    newNode = {
-      ...node,
-      isWall: false,
-      isWeight: false,
-      isFinish: !node.isFinish,
-    };
+  if (options.movingStartNode && !node.isFinish) {
+    const [oldStartRow, oldStartCol] = startCoords;
+    newGrid[oldStartRow][oldStartCol].isStart = false;
+
+    node.isStart = true;
+    node.isWall = false;
+    node.isWeight = false;
+    newStartCoords = [row, col];
+  } else if (options.movingFinishNode && !node.isStart) {
+    const [oldFinishRow, oldFinishCol] = finishCoords;
+    newGrid[oldFinishRow][oldFinishCol].isFinish = false;
+    console.log("removed old finish " + finishCoords);
+
+    node.isFinish = true;
+    node.isWall = false;
+    node.isWeight = false;
+    newFinishCoords = [row, col];
+    console.log("added new finish " + [row, col]);
+  } else if (options.toggleWall) {
+    node.isWall = !node.isWall;
+  } else if (options.toggleWeight) {
+    node.isWeight = !node.isWeight;
   }
-
-  newGrid[row][col] = newNode; // Update the node in the grid
-  return newGrid; // Return the updated grid
+  return { newGrid, newStartCoords, newFinishCoords };
 };
 
 export const clearPath = (visitedNodesInOrder, nodesInShortestPathOrder) => {
   for (let i = 0; i < visitedNodesInOrder.length; i++) {
     const node = visitedNodesInOrder[i];
     let element = document.getElementById(`node-${node.row}-${node.col}`);
-    element.classList.remove("node-visited");
-
-    console.log("cleared visited node classes");
-
+    element.classList.remove("node-visited", "node-visited-final");
     // console.log("removed visited class for node " + node.row + "-" + node.col);
   }
+  // console.log(
+  //   "cleared " + visitedNodesInOrder.length + " visited node classes"
+  // );
 
   for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
     const node = nodesInShortestPathOrder[i];
     let element = document.getElementById(`node-${node.row}-${node.col}`);
-    element.classList.remove("node-shortest-path");
+    element.classList.remove("node-shortest-path", "node-shortest-path-final");
 
     // console.log(
     //   "removed shortest path class for node " + node.row + "-" + node.col
     // );
-    console.log("cleared shortest path node classes");
   }
+
+  // console.log(
+  //   "cleared " + nodesInShortestPathOrder.length + " shortest path node classes"
+  // );
+
+  console.log("cleared path");
 };
 
 export const resetStartFinishNodes = (

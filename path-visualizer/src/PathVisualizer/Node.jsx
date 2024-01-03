@@ -19,7 +19,6 @@ export default class Node extends Component {
       onMouseDown, // Function to handle mouse down event
       onMouseEnter, // Function to handle mouse enter event
       onMouseUp, // Function to handle mouse up event
-      onMouseLeave,
       row, // Row index of the node
       distance, // Distance value of the node (not used in rendering)
       isVisualizing,
@@ -74,7 +73,6 @@ export default class Node extends Component {
         onMouseDown={() => onMouseDown(row, col)} // Handling mouse down event
         onMouseEnter={() => onMouseEnter(row, col)} // Handling mouse enter event
         onMouseUp={() => onMouseUp()} // Handling mouse up event
-        onMouseLeave={() => onMouseLeave(row, col)}
       >
         <div className="icon-container">{icon}</div>
       </div>

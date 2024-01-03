@@ -39,7 +39,8 @@ export function dijkstra(grid, startNode, finishNode) {
     const closestNode = unvisitedNodes.dequeue(); // Get the node with the shortest distance
 
     if (closestNode.isWall) continue; // Skip if the node is a wall
-    if (closestNode.distance === Infinity) return visitedNodesInOrder; // If node distance is Infinity, no path exists
+    if (closestNode.distance === Infinity)
+      return { visitedNodesInOrder, validPath }; // If node distance is Infinity, no path exists
 
     closestNode.isVisited = true; // Mark the node as visited
     visitedNodesInOrder.push(closestNode); // Add the node to the visited nodes array

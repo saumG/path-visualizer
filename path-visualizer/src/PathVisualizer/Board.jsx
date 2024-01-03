@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   dijkstra,
   getNodesInShortestPathOrder,
@@ -9,11 +9,12 @@ import Node from "./Node";
 import {
   animateDijkstra,
   animateShortestPath,
+  displayDijkstra,
 } from "./utils/animationUtils.jsx";
 import {
   clearPath,
   createInitialGrid,
-  updateGridNode,
+  updateGridState,
 } from "./utils/gridUtils.jsx";
 
 // Constants for grid size
@@ -39,17 +40,95 @@ const Board = () => {
   const [isPlacingWalls, setIsPlacingWalls] = useState(true);
   const [isPlacingWeights, setIsPlacingWeights] = useState(false);
 
-  const [startCoords, setStartCoords] = useState([]);
-  const [finishCoords, setFinishCoords] = useState([]);
   const [isMovingStartNode, setIsMovingStartNode] = useState(false);
   const [isMovingFinishNode, setIsMovingFinishNode] = useState(false);
 
   const [visitedNodes, setVisitedNodes] = useState([]);
   const [shortestPathNodes, setShortestPathNodes] = useState([]);
 
+  const [isVisualized, setIsVisualized] = useState(false);
+
+  const startCoordsRef = useRef([START_NODE_ROW, START_NODE_COL]);
+  const finishCoordsRef = useRef([FINISH_NODE_ROW, FINISH_NODE_COL]);
+
+  const updateCoords = (newStartCoords, newFinishCoords) => {
+    startCoordsRef.current = newStartCoords;
+    finishCoordsRef.current = newFinishCoords;
+  };
+
+  const resetNodeStates = () => {
+    for (const row of grid) {
+      for (const node of row) {
+        node.isVisited = false;
+        node.distance = Infinity;
+        node.previousNode = null;
+      }
+    }
+  };
+
   // Initialize the grid on component mount
-  const resetGrid = () => {
+  const resetGrid = (
+    maxRowNum,
+    maxColNum,
+    startRow,
+    startCol,
+    finishRow,
+    finishCol
+  ) => {
     const initialGrid = createInitialGrid(
+      maxRowNum,
+      maxColNum,
+      startRow,
+      startCol,
+      finishRow,
+      finishCol
+    );
+
+    resetNodeStates();
+    clearPath(visitedNodes, shortestPathNodes);
+
+    // let options = {
+    //   movingStartNode: true,
+    //   movingFinishNode: false,
+    //   toggleWall: false,
+    //   toggleWeight: false,
+    // };
+
+    // let { newGrid } = updateGridState(
+    //   initialGrid,
+    //   startCoordsRef.current,
+    //   finishCoordsRef.current, //irrelevant
+    //   START_NODE_ROW,
+    //   START_NODE_COL,
+    //   options
+    // );
+
+    // options = {
+    //   movingStartNode: false,
+    //   movingFinishNode: true,
+    //   toggleWall: false,
+    //   toggleWeight: false,
+    // };
+
+    // let { finalGrid } = updateGridState(
+    //   newGrid,
+    //   startCoordsRef.current, //irrelevant
+    //   finishCoordsRef.current,
+    //   FINISH_NODE_ROW,
+    //   FINISH_NODE_COL,
+    //   options
+    // );
+
+    updateCoords([startRow, startCol], [finishRow, finishCol]);
+
+    setGrid(initialGrid);
+    setVisitedNodes([]);
+    setShortestPathNodes([]);
+    setIsVisualized(false);
+  };
+
+  useEffect(() => {
+    resetGrid(
       MAX_ROW_NUM,
       MAX_COL_NUM,
       START_NODE_ROW,
@@ -57,14 +136,6 @@ const Board = () => {
       FINISH_NODE_ROW,
       FINISH_NODE_COL
     );
-    setGrid(initialGrid);
-    setStartCoords([START_NODE_ROW, START_NODE_COL]);
-    setFinishCoords([FINISH_NODE_ROW, FINISH_NODE_COL]);
-    clearPath(visitedNodes, shortestPathNodes);
-  };
-
-  useEffect(() => {
-    resetGrid();
   }, []);
 
   const isStartNode = (row, col) => {
@@ -77,24 +148,29 @@ const Board = () => {
 
   // Handle mouse down event on grid nodes
   const handleMouseDown = (row, col) => {
-    let newGrid = grid;
     if (!isVisualizing) {
       if (isStartNode(row, col)) {
         setIsMovingStartNode(true);
-        console.log("moving start node from " + row + " " + col);
       } else if (isFinishNode(row, col)) {
         setIsMovingFinishNode(true);
-        console.log("moving finish node from " + row + " " + col);
-      } else if (isPlacingWalls) {
-        newGrid = updateGridNode(grid, row, col, {
+      } else if (isPlacingWalls || isPlacingWeights) {
+        const options = {
+          movingStartNode: isMovingStartNode,
+          movingFinishNode: isMovingFinishNode,
           toggleWall: isPlacingWalls,
-        });
-      } else if (isPlacingWeights) {
-        newGrid = updateGridNode(grid, row, col, {
           toggleWeight: isPlacingWeights,
-        });
+        };
+        const { newGrid, newStartCoords, newFinishCoords } = updateGridState(
+          grid,
+          startCoordsRef.current,
+          finishCoordsRef.current,
+          row,
+          col,
+          options
+        );
+        setGrid(newGrid);
+        updateCoords(newStartCoords, newFinishCoords);
       }
-      setGrid(newGrid);
       setMouseIsPressed(true);
     }
   };
@@ -102,31 +178,22 @@ const Board = () => {
   // Handle mouse enter event for drag functionality
   const handleMouseEnter = (row, col) => {
     if (mouseIsPressed && !isVisualizing) {
-      let newGrid = grid;
-
-      if (isMovingStartNode) {
-        newGrid = updateGridNode(grid, row, col, {
-          movingStartNode: isMovingStartNode,
-        });
-        setStartCoords([row, col]);
-        console.log("setting new start coords to " + [row, col]);
-      } else if (isMovingFinishNode) {
-        newGrid = updateGridNode(grid, row, col, {
-          movingFinishNode: isMovingFinishNode,
-        });
-        setFinishCoords([row, col]);
-        console.log("setting new finish coords to " + [row, col]);
-      } else if (isPlacingWalls) {
-        newGrid = updateGridNode(grid, row, col, {
-          toggleWall: isPlacingWalls,
-        });
-      } else if (isPlacingWeights) {
-        newGrid = updateGridNode(grid, row, col, {
-          toggleWeight: isPlacingWeights,
-        });
-      }
-
+      const options = {
+        movingStartNode: isMovingStartNode,
+        movingFinishNode: isMovingFinishNode,
+        toggleWall: isPlacingWalls,
+        toggleWeight: isPlacingWeights,
+      };
+      const { newGrid, newStartCoords, newFinishCoords } = updateGridState(
+        grid,
+        startCoordsRef.current,
+        finishCoordsRef.current,
+        row,
+        col,
+        options
+      );
       setGrid(newGrid);
+      updateCoords(newStartCoords, newFinishCoords);
     }
   };
 
@@ -139,37 +206,30 @@ const Board = () => {
     }
   };
 
-  //handle mouse leave
-  const handleMouseLeave = (row, col) => {
-    if (mouseIsPressed && !isVisualizing) {
-      let newGrid = grid;
-      if (isMovingStartNode) {
-        newGrid = updateGridNode(grid, row, col, {
-          movingStartNode: isMovingStartNode,
-        });
-      } else if (isMovingFinishNode) {
-        newGrid = updateGridNode(grid, row, col, {
-          movingFinishNode: isMovingFinishNode,
-        });
-      }
-      setGrid(newGrid);
-    }
-  };
-
   const handleMouseLeaveGrid = () => {
     let newGrid = grid;
     // Check if start node is being moved and coordinates are valid
-    if (isMovingStartNode && startCoords.length === 2) {
-      newGrid = updateGridNode(newGrid, startCoords[0], startCoords[1], {
-        movingStartNode: true,
-      });
+    if (isMovingStartNode && startCoordsRef.current.length === 2) {
+      newGrid = updateGridState(
+        newGrid,
+        startCoordsRef.current[0],
+        startCoordsRef.current[1],
+        {
+          movingStartNode: true,
+        }
+      );
     }
 
     // Check if finish node is being moved and coordinates are valid
-    if (isMovingFinishNode && finishCoords.length === 2) {
-      newGrid = updateGridNode(newGrid, finishCoords[0], finishCoords[1], {
-        movingFinishNode: true,
-      });
+    if (isMovingFinishNode && finishCoordsRef.current.length === 2) {
+      newGrid = updateGridState(
+        newGrid,
+        finishCoordsRef.current[0],
+        finishCoordsRef.current[1],
+        {
+          movingFinishNode: true,
+        }
+      );
     }
 
     setGrid(newGrid);
@@ -180,11 +240,14 @@ const Board = () => {
 
   // Function to visualize Dijkstra's algorithm
   const visualizeDijkstra = () => {
-    const startNode = grid[startCoords[0]][startCoords[1]];
-    const finishNode = grid[finishCoords[0]][finishCoords[1]];
+    const startNode =
+      grid[startCoordsRef.current[0]][startCoordsRef.current[1]];
+    const finishNode =
+      grid[finishCoordsRef.current[0]][finishCoordsRef.current[1]];
 
-    console.log(startCoords);
-    console.log(finishCoords);
+    clearPath(visitedNodes, shortestPathNodes);
+    console.log("CLEARED old path");
+    resetNodeStates();
 
     // Run Dijkstra's algorithm and get the path
     const { visitedNodesInOrder, validPath } = dijkstra(
@@ -193,19 +256,23 @@ const Board = () => {
       finishNode
     );
     setVisitedNodes(visitedNodesInOrder);
+    console.log("valid path?: " + validPath);
 
     // Get nodes in the shortest path order
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
     setShortestPathNodes(nodesInShortestPathOrder);
 
-    // Animate the algorithm's path and shortest path
-    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder, validPath);
-
-    // Calculate the total animation time
-    totalAnimationTime =
-      visitedNodesInOrder.length * 10 + nodesInShortestPathOrder.length * 50;
-
-    console.log("total animation time is " + totalAnimationTime);
+    if (isVisualized) {
+      console.log("DISPLAYING new path");
+      displayDijkstra(visitedNodesInOrder, nodesInShortestPathOrder, validPath);
+      totalAnimationTime = 0;
+    } else {
+      console.log("ANIMATING new path");
+      animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder, validPath);
+      totalAnimationTime =
+        visitedNodesInOrder.length * 10 + nodesInShortestPathOrder.length * 50;
+      console.log("total animation time is " + totalAnimationTime);
+    }
   };
 
   const visualizeAlgorithm = (currentAlgorithm) => {
@@ -221,6 +288,8 @@ const Board = () => {
       setIsVisualizing(false);
       console.log("set visualizing to false");
     }, totalAnimationTime);
+
+    setIsVisualized(true);
   };
 
   const handleAlgorithmChange = (event) => {
@@ -245,10 +314,20 @@ const Board = () => {
           visualizeAlgorithm(currentAlgorithm);
         }}
         clearGrid={() => {
-          resetGrid();
+          resetGrid(
+            MAX_ROW_NUM,
+            MAX_COL_NUM,
+            startCoordsRef.current[0],
+            startCoordsRef.current[1],
+            finishCoordsRef.current[0],
+            finishCoordsRef.current[1]
+          );
         }}
         clearPath={() => {
           clearPath(visitedNodes, shortestPathNodes);
+          setVisitedNodes([]);
+          setShortestPathNodes([]);
+          setIsVisualized(false);
         }}
         toggleWallWeight={() => {
           toggleMousePlacementMode();
@@ -272,7 +351,6 @@ const Board = () => {
                   mouseIsPressed={mouseIsPressed}
                   onMouseDown={() => handleMouseDown(row, col)}
                   onMouseEnter={() => handleMouseEnter(row, col)}
-                  onMouseLeave={() => handleMouseLeave(row, col)}
                   onMouseUp={() => handleMouseUp()}
                   row={row}
                 />

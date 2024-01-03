@@ -7,7 +7,7 @@ export const animateDijkstra = (
   // If no valid path is found, log a message and skip animation
   if (!validPath) {
     console.log("No path found. Animation skipped.");
-    // return; TODO
+    // return; TODO:
   }
 
   // Iterate over each node visited in order
@@ -42,4 +42,32 @@ export const animateShortestPath = (nodesInShortestPathOrder) => {
         "node node-shortest-path";
     }, 50 * i); // The delay ensures the animation is visible and distinct from the visited nodes animation
   }
+};
+
+export const displayDijkstra = (
+  visitedNodesInOrder,
+  nodesInShortestPathOrder,
+  validPath
+) => {
+  if (!validPath) {
+    console.log("not valid path");
+    return;
+  }
+
+  // Update visited nodes
+  visitedNodesInOrder.forEach((node) => {
+    document.getElementById(`node-${node.row}-${node.col}`).className =
+      "node node-visited-final";
+  });
+
+  console.log("visited nodes: " + visitedNodesInOrder.length);
+
+  // Update shortest path nodes
+  nodesInShortestPathOrder.forEach((node) => {
+    document.getElementById(`node-${node.row}-${node.col}`).className =
+      "node node-shortest-path-final";
+  });
+  console.log("shortest path nodes: " + nodesInShortestPathOrder.length);
+
+  return;
 };
