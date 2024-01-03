@@ -1,3 +1,8 @@
+body {
+  background-color: rgb(251, 237, 220);
+  color: white; /* Setting text color to white for contrast */
+}
+
 .App {
   text-align: center;
 }

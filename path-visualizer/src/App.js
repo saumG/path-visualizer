@@ -1,5 +1,4 @@
 import "./App.css";
-import logo from "./logo.svg";
 import Board from "./PathVisualizer/Board";
 
 function App() {
