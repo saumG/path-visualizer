@@ -20,12 +20,15 @@ export default class Node extends Component {
       onMouseEnter, // Function to handle mouse enter event
       onMouseUp, // Function to handle mouse up event
       row, // Row index of the node
+      isVisited,
+      isInShortestPath,
       distance, // Distance value of the node (not used in rendering)
+      isVisualized,
       isVisualizing,
     } = this.props;
 
     // Determining the additional class name based on node properties
-    const extraClassName = isFinish
+    const nodeClassifier = isFinish
       ? "node-finish" // Class for finish node
       : isStart
       ? "node-start" // Class for start node
@@ -65,11 +68,41 @@ export default class Node extends Component {
       );
     }
 
+    let pathClasses = "";
+
+    if (isVisualizing) {
+      // if (row === 10 && col >= 8 && col <= 20) {
+      //   console.log(
+      //     `isvisualizing is true, adding visualization classes for node ${row} ${col}`
+      //   );
+      // }
+
+      // Classes for animating
+      pathClasses = isInShortestPath
+        ? "node-shortest-path"
+        : isVisited
+        ? "node-visited"
+        : "";
+    } else if (isVisualized) {
+      // if (row === 10 && col >= 8 && col <= 20) {
+      //   console.log(
+      //     `isvisualized is true, adding visualization classes for node ${row} ${col}`
+      //   );
+      // }
+
+      // Classes for final display
+      pathClasses = isInShortestPath
+        ? "node-shortest-path-final"
+        : isVisited
+        ? "node-visited-final"
+        : "";
+    }
+
     // Rendering the node element
     return (
       <div
         id={`node-${row}-${col}`} // Setting the ID for the node div
-        className={`node ${extraClassName}`} // Applying base and additional class names
+        className={`node ${nodeClassifier} ${pathClasses}`} // Applying base and additional class names
         onMouseDown={() => onMouseDown(row, col)} // Handling mouse down event
         onMouseEnter={() => onMouseEnter(row, col)} // Handling mouse enter event
         onMouseUp={() => onMouseUp()} // Handling mouse up event

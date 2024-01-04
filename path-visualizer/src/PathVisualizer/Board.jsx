@@ -7,11 +7,6 @@ import "./Board.css";
 import Header from "./Header.jsx";
 import Node from "./Node";
 import {
-  animateDijkstra,
-  animateShortestPath,
-  displayDijkstra,
-} from "./utils/animationUtils.jsx";
-import {
   clearPath,
   createInitialGrid,
   updateGridState,
@@ -34,7 +29,11 @@ const Board = () => {
   // State for the grid and mouse interaction
   const [grid, setGrid] = useState([]);
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
+
   const [isVisualizing, setIsVisualizing] = useState(false);
+  const [isVisualized, setIsVisualized] = useState(false);
+  const isVisualizingRef = useRef(false);
+  const isVisualizedRef = useRef(false);
 
   const [currentAlgorithm, setCurrentAlgorithm] = useState("Dijkstra");
   const [isPlacingWalls, setIsPlacingWalls] = useState(true);
@@ -43,11 +42,8 @@ const Board = () => {
   const [isMovingStartNode, setIsMovingStartNode] = useState(false);
   const [isMovingFinishNode, setIsMovingFinishNode] = useState(false);
 
-  const [visitedNodes, setVisitedNodes] = useState([]);
-  const [shortestPathNodes, setShortestPathNodes] = useState([]);
-
-  const [isVisualized, setIsVisualized] = useState(false);
-
+  const visitedNodesRef = useRef([]);
+  const shortestPathNodesRef = useRef([]);
   const startCoordsRef = useRef([START_NODE_ROW, START_NODE_COL]);
   const finishCoordsRef = useRef([FINISH_NODE_ROW, FINISH_NODE_COL]);
 
@@ -66,7 +62,6 @@ const Board = () => {
     }
   };
 
-  // Initialize the grid on component mount
   const resetGrid = (
     maxRowNum,
     maxColNum,
@@ -85,45 +80,13 @@ const Board = () => {
     );
 
     resetNodeStates();
-    clearPath(visitedNodes, shortestPathNodes);
-
-    // let options = {
-    //   movingStartNode: true,
-    //   movingFinishNode: false,
-    //   toggleWall: false,
-    //   toggleWeight: false,
-    // };
-
-    // let { newGrid } = updateGridState(
-    //   initialGrid,
-    //   startCoordsRef.current,
-    //   finishCoordsRef.current, //irrelevant
-    //   START_NODE_ROW,
-    //   START_NODE_COL,
-    //   options
-    // );
-
-    // options = {
-    //   movingStartNode: false,
-    //   movingFinishNode: true,
-    //   toggleWall: false,
-    //   toggleWeight: false,
-    // };
-
-    // let { finalGrid } = updateGridState(
-    //   newGrid,
-    //   startCoordsRef.current, //irrelevant
-    //   finishCoordsRef.current,
-    //   FINISH_NODE_ROW,
-    //   FINISH_NODE_COL,
-    //   options
-    // );
+    clearPath(visitedNodesRef.current, shortestPathNodesRef.current);
 
     updateCoords([startRow, startCol], [finishRow, finishCol]);
 
     setGrid(initialGrid);
-    setVisitedNodes([]);
-    setShortestPathNodes([]);
+    visitedNodesRef.current = [];
+    shortestPathNodesRef.current = [];
     setIsVisualized(false);
   };
 
@@ -138,20 +101,11 @@ const Board = () => {
     );
   }, []);
 
-  const isStartNode = (row, col) => {
-    return grid[row][col].isStart;
-  };
-
-  const isFinishNode = (row, col) => {
-    return grid[row][col].isFinish;
-  };
-
-  // Handle mouse down event on grid nodes
   const handleMouseDown = (row, col) => {
     if (!isVisualizing) {
-      if (isStartNode(row, col)) {
+      if (grid[row][col].isStart) {
         setIsMovingStartNode(true);
-      } else if (isFinishNode(row, col)) {
+      } else if (grid[row][col].isFinish) {
         setIsMovingFinishNode(true);
       } else if (isPlacingWalls || isPlacingWeights) {
         const options = {
@@ -175,7 +129,6 @@ const Board = () => {
     }
   };
 
-  // Handle mouse enter event for drag functionality
   const handleMouseEnter = (row, col) => {
     if (mouseIsPressed && !isVisualizing) {
       const options = {
@@ -195,9 +148,13 @@ const Board = () => {
       setGrid(newGrid);
       updateCoords(newStartCoords, newFinishCoords);
     }
+
+    if ((isMovingStartNode || isMovingFinishNode) && isVisualized) {
+      visualizeAlgorithm(currentAlgorithm);
+      console.log("should have displayed algorithm");
+    }
   };
 
-  // Reset mouse press state on mouse up
   const handleMouseUp = () => {
     if (!isVisualizing) {
       setMouseIsPressed(false);
@@ -238,16 +195,72 @@ const Board = () => {
     // reset state to wall/weight
   };
 
-  // Function to visualize Dijkstra's algorithm
+  const animateAlgorithm = (
+    validPath,
+    visitedNodesInOrder,
+    shortestPathNodes
+  ) => {
+    if (validPath) {
+      visitedNodesInOrder.forEach((node, index) => {
+        setTimeout(() => {
+          const newGrid = grid;
+          newGrid[node.row][node.col].isVisited = true;
+          setGrid(newGrid);
+        }, 10 * index);
+      });
+
+      shortestPathNodes.forEach((node, index) => {
+        setTimeout(() => {
+          const newGrid = grid;
+          newGrid[node.row][node.col].isInShortestPath = true;
+          setGrid(newGrid);
+        }, 50 * index);
+      });
+
+      totalAnimationTime =
+        visitedNodesInOrder.length * 10 + shortestPathNodes.length * 50;
+    }
+  };
+
+  const instantAlgorithm = (
+    validPath,
+    visitedNodesInOrder,
+    shortestPathNodes
+  ) => {
+    if (validPath) {
+      // Update visited nodes
+      let newGrid = grid;
+      visitedNodesInOrder.forEach((node) => {
+        newGrid[node.row][node.col].isVisited = true;
+      });
+
+      // Update shortest path nodes
+      shortestPathNodes.forEach((node) => {
+        newGrid[node.row][node.col].isInShortestPath = true;
+      });
+
+      console.log(
+        "visited: " +
+          visitedNodesInOrder.length +
+          " shortest: " +
+          shortestPathNodes.length
+      );
+      setGrid(newGrid);
+    }
+    totalAnimationTime = 0;
+    console.log("not valid path");
+  };
+
   const visualizeDijkstra = () => {
     const startNode =
       grid[startCoordsRef.current[0]][startCoordsRef.current[1]];
     const finishNode =
       grid[finishCoordsRef.current[0]][finishCoordsRef.current[1]];
 
-    clearPath(visitedNodes, shortestPathNodes);
+    clearPath(visitedNodesRef.current, shortestPathNodesRef.current);
     console.log("CLEARED old path");
     resetNodeStates();
+    console.log("reset node states");
 
     // Run Dijkstra's algorithm and get the path
     const { visitedNodesInOrder, validPath } = dijkstra(
@@ -255,29 +268,46 @@ const Board = () => {
       startNode,
       finishNode
     );
-    setVisitedNodes(visitedNodesInOrder);
+    visitedNodesRef.current = visitedNodesInOrder;
     console.log("valid path?: " + validPath);
 
     // Get nodes in the shortest path order
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    setShortestPathNodes(nodesInShortestPathOrder);
+    shortestPathNodesRef.current = nodesInShortestPathOrder;
 
     if (isVisualized) {
       console.log("DISPLAYING new path");
-      displayDijkstra(visitedNodesInOrder, nodesInShortestPathOrder, validPath);
-      totalAnimationTime = 0;
+      instantAlgorithm(
+        validPath,
+        visitedNodesInOrder,
+        nodesInShortestPathOrder
+      );
     } else {
       console.log("ANIMATING new path");
-      animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder, validPath);
-      totalAnimationTime =
-        visitedNodesInOrder.length * 10 + nodesInShortestPathOrder.length * 50;
+      animateAlgorithm(
+        validPath,
+        visitedNodesInOrder,
+        nodesInShortestPathOrder
+      );
       console.log("total animation time is " + totalAnimationTime);
     }
+
+    let newGrid = grid;
+
+    let logGridVisited = [];
+    let logGridShortest = [];
+    for (let i = 0; i < 40; i++) {
+      logGridVisited.push(newGrid[10][i].isVisited);
+      logGridShortest.push(newGrid[10][i].isInShortestPath);
+    }
+    console.log("new grid visited is " + JSON.stringify(logGridVisited));
+    console.log("new grid shortest is " + JSON.stringify(logGridShortest));
   };
 
   const visualizeAlgorithm = (currentAlgorithm) => {
     console.log("visualizing algorithm: " + currentAlgorithm);
-    setIsVisualizing(true);
+    isVisualizingRef.current = true;
+    isVisualizedRef.current = false;
 
     if (currentAlgorithm === "Dijkstra") {
       visualizeDijkstra();
@@ -286,10 +316,11 @@ const Board = () => {
     // Reset isVisualizing after the total animation time
     setTimeout(() => {
       setIsVisualizing(false);
+      setIsVisualized(true);
+      isVisualizingRef.current = false;
+      isVisualizedRef.current = true;
       console.log("set visualizing to false");
     }, totalAnimationTime);
-
-    setIsVisualized(true);
   };
 
   const handleAlgorithmChange = (event) => {
@@ -324,9 +355,9 @@ const Board = () => {
           );
         }}
         clearPath={() => {
-          clearPath(visitedNodes, shortestPathNodes);
-          setVisitedNodes([]);
-          setShortestPathNodes([]);
+          clearPath(visitedNodesRef.current, shortestPathNodesRef.current);
+          visitedNodesRef.current = [];
+          shortestPathNodesRef.current = [];
           setIsVisualized(false);
         }}
         toggleWallWeight={() => {
@@ -339,7 +370,16 @@ const Board = () => {
         {grid.map((row, rowIdx) => (
           <div key={rowIdx}>
             {row.map((node, nodeIdx) => {
-              const { row, col, isFinish, isStart, isWall, isWeight } = node;
+              const {
+                row,
+                col,
+                isFinish,
+                isStart,
+                isWall,
+                isWeight,
+                isVisited,
+                isInShortestPath,
+              } = node;
               return (
                 <Node
                   key={nodeIdx}
@@ -353,6 +393,10 @@ const Board = () => {
                   onMouseEnter={() => handleMouseEnter(row, col)}
                   onMouseUp={() => handleMouseUp()}
                   row={row}
+                  isVisited={isVisited}
+                  isInShortestPath={isInShortestPath}
+                  isVisualized={isVisualizedRef.current}
+                  isVisualizing={isVisualizingRef.current}
                 />
               );
             })}

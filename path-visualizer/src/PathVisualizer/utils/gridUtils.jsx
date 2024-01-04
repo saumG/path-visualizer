@@ -76,13 +76,13 @@ export const updateGridState = (
   } else if (options.movingFinishNode && !node.isStart) {
     const [oldFinishRow, oldFinishCol] = finishCoords;
     newGrid[oldFinishRow][oldFinishCol].isFinish = false;
-    console.log("removed old finish " + finishCoords);
+    // console.log("removed old finish " + finishCoords);
 
     node.isFinish = true;
     node.isWall = false;
     node.isWeight = false;
     newFinishCoords = [row, col];
-    console.log("added new finish " + [row, col]);
+    // console.log("added new finish " + [row, col]);
   } else if (options.toggleWall) {
     node.isWall = !node.isWall;
   } else if (options.toggleWeight) {
@@ -94,8 +94,10 @@ export const updateGridState = (
 export const clearPath = (visitedNodesInOrder, nodesInShortestPathOrder) => {
   for (let i = 0; i < visitedNodesInOrder.length; i++) {
     const node = visitedNodesInOrder[i];
-    let element = document.getElementById(`node-${node.row}-${node.col}`);
-    element.classList.remove("node-visited", "node-visited-final");
+    // let element = document.getElementById(`node-${node.row}-${node.col}`);
+    // element.classList.remove("node-visited", "node-visited-final");
+    node.isInShortestPath = false;
+    node.isVisited = false;
     // console.log("removed visited class for node " + node.row + "-" + node.col);
   }
   // console.log(
@@ -104,9 +106,10 @@ export const clearPath = (visitedNodesInOrder, nodesInShortestPathOrder) => {
 
   for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
     const node = nodesInShortestPathOrder[i];
-    let element = document.getElementById(`node-${node.row}-${node.col}`);
-    element.classList.remove("node-shortest-path", "node-shortest-path-final");
-
+    // let element = document.getElementById(`node-${node.row}-${node.col}`);
+    // element.classList.remove("node-shortest-path", "node-shortest-path-final");
+    node.isInShortestPath = false;
+    node.isVisited = false;
     // console.log(
     //   "removed shortest path class for node " + node.row + "-" + node.col
     // );
@@ -115,8 +118,6 @@ export const clearPath = (visitedNodesInOrder, nodesInShortestPathOrder) => {
   // console.log(
   //   "cleared " + nodesInShortestPathOrder.length + " shortest path node classes"
   // );
-
-  console.log("cleared path");
 };
 
 export const resetStartFinishNodes = (
