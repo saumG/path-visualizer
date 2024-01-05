@@ -1,6 +1,5 @@
 import finishIcon from "../images/node-finish.png";
 import startIcon from "../images/node-start.png";
-import weightIcon from "../images/weight.png";
 
 // Function to create the initial grid for the pathfinding visualization
 export const createInitialGrid = (
@@ -51,8 +50,9 @@ const createNode = (
     isVisited: false, // Has this node been visited?
     isWall: false, // Is this node a wall?
     previousNode: null, // Reference to the previous node in the path
-    nodeClassifier: "",
-    nodePathClassifier: "",
+    fCost: Infinity,
+    gCost: Infinity,
+    hcost: Infinity,
   };
 };
 
@@ -90,6 +90,7 @@ export const updateGridState = (
 
     let newStart = document.getElementById(`node-${row}-${col}`);
     newStart.classList.add("node-start");
+    newStart.classList.remove("node-wall", "node-weight");
     let newStartIconContainer = document.getElementById(
       `icon-container-${row}-${col}`
     );
@@ -116,6 +117,7 @@ export const updateGridState = (
 
     let newFinish = document.getElementById(`node-${row}-${col}`);
     newFinish.classList.add("node-finish");
+    newFinish.classList.remove("node-wall", "node-weight");
 
     let newFinishIconContainer = document.getElementById(
       `icon-container-${row}-${col}`
@@ -128,24 +130,25 @@ export const updateGridState = (
     node.isWall = !node.isWall;
 
     let element = document.getElementById(`node-${row}-${col}`);
+
     if (node.isWall) {
       element.classList.add("node-wall");
+      console.log(`node-${row}-${col} is now a wall `);
     } else {
       element.classList.remove("node-wall");
+      console.log(`node-${row}-${col} is now NOT a wall `);
     }
   } else if (options.toggleWeight) {
     node.isWeight = !node.isWeight;
 
     let element = document.getElementById(`node-${row}-${col}`);
-    let weightIconContainer = document.getElementById(
-      `icon-container-${row}-${col}`
-    );
-    if (node.isWall) {
+
+    if (node.isWeight) {
       element.classList.add("node-weight");
-      weightIconContainer.innerHTML = `<img src=${weightIcon} alt="Weight" className="node-weight node-icon" draggable="false" />`;
+      console.log(`node-${row}-${col} is now a weight `);
     } else {
       element.classList.remove("node-weight");
-      weightIconContainer.innerHTML = "";
+      console.log(`node-${row}-${col} is now NOT a weight `);
     }
   }
   return { newGrid, newStartCoords, newFinishCoords };

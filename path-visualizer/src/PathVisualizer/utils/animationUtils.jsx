@@ -1,3 +1,5 @@
+//NOT IN USE
+
 // Function to animate the process of Dijkstra's algorithm
 export const animateDijkstra = (
   visitedNodesInOrder, // Array of nodes visited in order

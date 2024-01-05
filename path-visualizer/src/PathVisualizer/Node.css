@@ -5,6 +5,7 @@
   border-left: 1px solid rgb(200, 200, 200);
   display: inline-block;
   vertical-align: top; /* Add this line */
+  position: relative; /* Added for positioning pseudo-element */
 }
 
 .icon-container {
@@ -36,10 +37,15 @@
   opacity: 1; /* Adjust transparency as needed */
 }
 
-.node-weight {
-  max-width: auto; /* Icon width is 100% of the node */
-  max-height: 80%; /* Icon height is 100% of the node */
-  opacity: 1; /* Adjust transparency as needed */
+.node-weight::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 15px; /* Smaller width */
+  height: 15px; /* Smaller height */
+  background-color: rgb(255, 0, 0);
+  transform: translate(-50%, -50%); /* Center the pseudo-element */
 }
 
 .node-start,

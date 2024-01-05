@@ -2,10 +2,6 @@
 import React, { Component } from "react";
 import "./Node.css";
 
-import finishIcon from "./images/node-finish.png";
-import startIcon from "./images/node-start.png";
-import weightIcon from "./images/weight.png";
-
 // Definition of the Node class component
 export default class Node extends Component {
   render() {

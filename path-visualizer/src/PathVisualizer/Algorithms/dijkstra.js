@@ -34,19 +34,25 @@ export function dijkstra(grid, startNode, finishNode) {
   const unvisitedNodes = new PriorityQueue(); // Create a new PriorityQueue
   unvisitedNodes.enqueue(startNode); // Add the starting node to the queue
 
-  // Loop until there are nodes in the priority queue
   while (!!unvisitedNodes.length) {
     const closestNode = unvisitedNodes.dequeue(); // Get the node with the shortest distance
 
-    if (closestNode.isWall) continue; // Skip if the node is a wall
-    if (closestNode.distance === Infinity)
-      return { visitedNodesInOrder, validPath }; // If node distance is Infinity, no path exists
+    if (closestNode.isWall) {
+      console.log(
+        `${closestNode.row} + ${closestNode.col} is a wall. skipping`
+      );
+      continue; // Skip if the node is a wall
+    }
 
-    closestNode.isVisited = true; // Mark the node as visited
-    visitedNodesInOrder.push(closestNode); // Add the node to the visited nodes array
+    if (closestNode.distance === Infinity) {
+      return { visitedNodesInOrder, validPath }; // If node distance is Infinity, no path exists
+    }
+
+    closestNode.isVisited = true;
+    visitedNodesInOrder.push(closestNode);
 
     if (closestNode === finishNode) {
-      validPath = true; // If finish node is reached, a valid path is found
+      validPath = true;
       break;
     }
 
@@ -61,7 +67,8 @@ export function dijkstra(grid, startNode, finishNode) {
 function updateUnvisitedNeighbors(node, grid, unvisitedNodes) {
   const unvisitedNeighbors = getUnvisitedNeighbors(node, grid);
   for (const neighbor of unvisitedNeighbors) {
-    const newDistance = node.distance + 1; // Calculate the new distance
+    const weight = neighbor.isWeight ? 5 : 1;
+    const newDistance = node.distance + weight; // Calculate the new distance
     if (newDistance < neighbor.distance) {
       // Check if the new distance is shorter
       neighbor.distance = newDistance; // Update the neighbor's distance
