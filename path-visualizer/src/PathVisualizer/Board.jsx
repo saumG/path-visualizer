@@ -12,6 +12,9 @@ import {
   updateGridState,
 } from "./utils/gridUtils.jsx";
 
+import finishIcon from "./images/node-finish.png";
+import startIcon from "./images/node-start.png";
+
 // Constants for grid size
 const MAX_ROW_NUM = 21;
 const MAX_COL_NUM = 50;
@@ -90,6 +93,32 @@ const Board = () => {
     setIsVisualized(false);
   };
 
+  const updateStartFinishIcons = (startRow, startCol, finishRow, finishCol) => {
+    const startNode = document.getElementById(`node-${startRow}-${startCol}`);
+    const finishNode = document.getElementById(
+      `node-${finishRow}-${finishCol}`
+    );
+
+    console.log(startNode);
+    console.log(finishNode);
+
+    if (startNode) {
+      startNode.classList.add("node-start");
+      const startIconContainer = document.getElementById(
+        `icon-container-${startRow}-${startCol}`
+      );
+      startIconContainer.innerHTML = `<img src="${startIcon}" alt="Start" class="node-start node-icon" draggable="false" />`;
+    }
+
+    if (finishNode) {
+      finishNode.classList.add("node-finish");
+      const finishIconContainer = document.getElementById(
+        `icon-container-${finishRow}-${finishCol}`
+      );
+      finishIconContainer.innerHTML = `<img src="${finishIcon}" alt="Finish" class="node-finish node-icon" draggable="false" />`;
+    }
+  };
+
   useEffect(() => {
     resetGrid(
       MAX_ROW_NUM,
@@ -99,6 +128,15 @@ const Board = () => {
       FINISH_NODE_ROW,
       FINISH_NODE_COL
     );
+
+    setTimeout(() => {
+      updateStartFinishIcons(
+        START_NODE_ROW,
+        START_NODE_COL,
+        FINISH_NODE_ROW,
+        FINISH_NODE_COL
+      );
+    }, 0);
   }, []);
 
   const handleMouseDown = (row, col) => {
@@ -201,21 +239,28 @@ const Board = () => {
     shortestPathNodes
   ) => {
     if (validPath) {
+      let newGrid = grid;
       visitedNodesInOrder.forEach((node, index) => {
         setTimeout(() => {
-          const newGrid = grid;
           newGrid[node.row][node.col].isVisited = true;
-          setGrid(newGrid);
+          newGrid[node.row][node.col].nodePathClassifier = "node-visited";
+
+          let element = document.getElementById(`node-${node.row}-${node.col}`);
+          element.classList.add("node-visited");
         }, 10 * index);
       });
 
       shortestPathNodes.forEach((node, index) => {
         setTimeout(() => {
-          const newGrid = grid;
           newGrid[node.row][node.col].isInShortestPath = true;
-          setGrid(newGrid);
+          newGrid[node.row][node.col].nodePathClassifier = "node-shortest-path";
+
+          let element = document.getElementById(`node-${node.row}-${node.col}`);
+          element.classList.add("node-shortest-path");
         }, 50 * index);
       });
+
+      setGrid(newGrid);
 
       totalAnimationTime =
         visitedNodesInOrder.length * 10 + shortestPathNodes.length * 50;
@@ -232,11 +277,21 @@ const Board = () => {
       let newGrid = grid;
       visitedNodesInOrder.forEach((node) => {
         newGrid[node.row][node.col].isVisited = true;
+        newGrid[node.row][node.col].nodePathClassifier =
+          "node-shortest-path-final";
+
+        let element = document.getElementById(`node-${node.row}-${node.col}`);
+        element.classList.add("node-visited-final");
       });
 
       // Update shortest path nodes
       shortestPathNodes.forEach((node) => {
         newGrid[node.row][node.col].isInShortestPath = true;
+        newGrid[node.row][node.col].nodePathClassifier =
+          "node-shortest-path-final";
+
+        let element = document.getElementById(`node-${node.row}-${node.col}`);
+        element.classList.add("node-shortest-path-final");
       });
 
       console.log(
@@ -369,7 +424,7 @@ const Board = () => {
       <div className="grid" onMouseLeave={handleMouseLeaveGrid}>
         {grid.map((row, rowIdx) => (
           <div key={rowIdx}>
-            {row.map((node, nodeIdx) => {
+            {row.map((node) => {
               const {
                 row,
                 col,
@@ -379,10 +434,12 @@ const Board = () => {
                 isWeight,
                 isVisited,
                 isInShortestPath,
+                nodeClassifier,
+                nodePathClassifier,
               } = node;
               return (
                 <Node
-                  key={nodeIdx}
+                  key={`${row}-${col}`}
                   col={col}
                   isFinish={isFinish}
                   isStart={isStart}
@@ -395,8 +452,8 @@ const Board = () => {
                   row={row}
                   isVisited={isVisited}
                   isInShortestPath={isInShortestPath}
-                  isVisualized={isVisualizedRef.current}
-                  isVisualizing={isVisualizingRef.current}
+                  nodeClassifier={nodeClassifier}
+                  nodePathClassifier={nodePathClassifier}
                 />
               );
             })}

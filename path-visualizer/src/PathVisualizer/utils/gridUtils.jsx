@@ -1,3 +1,7 @@
+import finishIcon from "../images/node-finish.png";
+import startIcon from "../images/node-start.png";
+import weightIcon from "../images/weight.png";
+
 // Function to create the initial grid for the pathfinding visualization
 export const createInitialGrid = (
   MAX_ROW_NUM, // Maximum number of rows
@@ -47,6 +51,8 @@ const createNode = (
     isVisited: false, // Has this node been visited?
     isWall: false, // Is this node a wall?
     previousNode: null, // Reference to the previous node in the path
+    nodeClassifier: "",
+    nodePathClassifier: "",
   };
 };
 
@@ -69,24 +75,78 @@ export const updateGridState = (
     const [oldStartRow, oldStartCol] = startCoords;
     newGrid[oldStartRow][oldStartCol].isStart = false;
 
+    let oldStart = document.getElementById(
+      `node-${oldStartRow}-${oldStartCol}`
+    );
+    oldStart.classList.remove("node-start");
+    let oldStartIconContainer = document.getElementById(
+      `icon-container-${oldStartRow}-${oldStartCol}`
+    );
+    oldStartIconContainer.innerHTML = ""; // Remove old start icon
+
     node.isStart = true;
     node.isWall = false;
     node.isWeight = false;
+
+    let newStart = document.getElementById(`node-${row}-${col}`);
+    newStart.classList.add("node-start");
+    let newStartIconContainer = document.getElementById(
+      `icon-container-${row}-${col}`
+    );
+    newStartIconContainer.innerHTML = `<img src=${startIcon} alt="Start" className="node-start node-icon" draggable="false" />`;
     newStartCoords = [row, col];
   } else if (options.movingFinishNode && !node.isStart) {
     const [oldFinishRow, oldFinishCol] = finishCoords;
     newGrid[oldFinishRow][oldFinishCol].isFinish = false;
     // console.log("removed old finish " + finishCoords);
 
+    let oldFinish = document.getElementById(
+      `node-${oldFinishRow}-${oldFinishCol}`
+    );
+    oldFinish.classList.remove("node-finish");
+
+    let oldFinishIconContainer = document.getElementById(
+      `icon-container-${oldFinishRow}-${oldFinishCol}`
+    );
+    oldFinishIconContainer.innerHTML = ""; // Remove old start icon
+
     node.isFinish = true;
     node.isWall = false;
     node.isWeight = false;
+
+    let newFinish = document.getElementById(`node-${row}-${col}`);
+    newFinish.classList.add("node-finish");
+
+    let newFinishIconContainer = document.getElementById(
+      `icon-container-${row}-${col}`
+    );
+    newFinishIconContainer.innerHTML = `<img src=${finishIcon} alt="Finish" className="node-finish node-icon" draggable="false" />`;
+
     newFinishCoords = [row, col];
     // console.log("added new finish " + [row, col]);
   } else if (options.toggleWall) {
     node.isWall = !node.isWall;
+
+    let element = document.getElementById(`node-${row}-${col}`);
+    if (node.isWall) {
+      element.classList.add("node-wall");
+    } else {
+      element.classList.remove("node-wall");
+    }
   } else if (options.toggleWeight) {
     node.isWeight = !node.isWeight;
+
+    let element = document.getElementById(`node-${row}-${col}`);
+    let weightIconContainer = document.getElementById(
+      `icon-container-${row}-${col}`
+    );
+    if (node.isWall) {
+      element.classList.add("node-weight");
+      weightIconContainer.innerHTML = `<img src=${weightIcon} alt="Weight" className="node-weight node-icon" draggable="false" />`;
+    } else {
+      element.classList.remove("node-weight");
+      weightIconContainer.innerHTML = "";
+    }
   }
   return { newGrid, newStartCoords, newFinishCoords };
 };
@@ -94,8 +154,8 @@ export const updateGridState = (
 export const clearPath = (visitedNodesInOrder, nodesInShortestPathOrder) => {
   for (let i = 0; i < visitedNodesInOrder.length; i++) {
     const node = visitedNodesInOrder[i];
-    // let element = document.getElementById(`node-${node.row}-${node.col}`);
-    // element.classList.remove("node-visited", "node-visited-final");
+    let element = document.getElementById(`node-${node.row}-${node.col}`);
+    element.classList.remove("node-visited", "node-visited-final");
     node.isInShortestPath = false;
     node.isVisited = false;
     // console.log("removed visited class for node " + node.row + "-" + node.col);
@@ -106,8 +166,8 @@ export const clearPath = (visitedNodesInOrder, nodesInShortestPathOrder) => {
 
   for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
     const node = nodesInShortestPathOrder[i];
-    // let element = document.getElementById(`node-${node.row}-${node.col}`);
-    // element.classList.remove("node-shortest-path", "node-shortest-path-final");
+    let element = document.getElementById(`node-${node.row}-${node.col}`);
+    element.classList.remove("node-shortest-path", "node-shortest-path-final");
     node.isInShortestPath = false;
     node.isVisited = false;
     // console.log(
