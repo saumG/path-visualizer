@@ -6,6 +6,7 @@ import weightIcon from "./images/weight-button.png";
 
 function Header({
   handleAlgorithmChange,
+  handleMazeChange,
   onVisualize,
   clearGrid,
   clearPath,
@@ -36,9 +37,9 @@ function Header({
           <option value="DFS">Depth-First Search</option>
         </select>
 
-        <select id="maze" className="dropdown">
-          <option value="maze1">Maze 1</option>
-          <option value="maze2">Maze 2</option>
+        <select id="maze" className="dropdown" onChange={handleMazeChange}>
+          <option value="Default">Select Maze Here</option>
+          <option value="Recursive">Recursive</option>
         </select>
       </div>
 

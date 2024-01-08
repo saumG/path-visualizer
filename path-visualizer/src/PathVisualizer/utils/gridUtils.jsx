@@ -49,10 +49,19 @@ const createNode = (
     distance: Infinity, // Initial distance set to Infinity
     isVisited: false, // Has this node been visited?
     isWall: false, // Is this node a wall?
+    isWeight: false,
     previousNode: null, // Reference to the previous node in the path
     fCost: Infinity,
     gCost: Infinity,
     hcost: Infinity,
+    isMazeWall: !(
+      (row === START_NODE_ROW && col === START_NODE_COL) ||
+      (row === FINISH_NODE_ROW && col === FINISH_NODE_COL)
+    ),
+    isMazePath: false,
+    isMazeVisited:
+      (row === START_NODE_ROW && col === START_NODE_COL) ||
+      (row === FINISH_NODE_ROW && col === FINISH_NODE_COL),
   };
 };
 
