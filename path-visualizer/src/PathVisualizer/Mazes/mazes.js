@@ -2,7 +2,7 @@ import { updateGridState } from "../utils/gridUtils";
 
 // Constants for grid size
 const MAX_ROW_NUM = 21;
-const MAX_COL_NUM = 50;
+const MAX_COL_NUM = 51;
 const directions = [
   [-2, 0],
   [2, 0],
@@ -27,18 +27,17 @@ export function backtrackDFS(grid, r, c, pathList = []) {
     const rowNext = cell[0];
     const colNext = cell[1];
 
-    grid[rowNext][colNext].isMazeVisited = true;
-    grid[rowNext][colNext].isMazePath = true;
-    grid[rowNext][colNext].isMazeWall = false;
+    if (!grid[rowNext][colNext].isMazeVisited) {
+      const rowGap = cell[2];
+      const colGap = cell[3];
 
-    const rowGap = cell[2];
-    const colGap = cell[3];
+      grid[rowGap][colGap].isMazeVisited = true;
+      grid[rowGap][colGap].isMazePath = true;
+      grid[rowGap][colGap].isMazeWall = false;
 
-    grid[rowGap][colGap].isMazeVisited = true;
-    grid[rowGap][colGap].isMazePath = true;
-    grid[rowGap][colGap].isMazeWall = false;
-
-    backtrackDFS(grid, rowNext, colNext, pathList);
+      pathList.push([rowGap, colGap]);
+      backtrackDFS(grid, rowNext, colNext, pathList);
+    }
   }
 
   return { grid, pathList };

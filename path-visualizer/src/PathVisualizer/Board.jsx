@@ -22,7 +22,7 @@ import startIcon from "./images/node-start.png";
 
 // Constants for grid size
 const MAX_ROW_NUM = 21;
-const MAX_COL_NUM = 50;
+const MAX_COL_NUM = 51;
 
 // Constants for start/finish nodes
 const START_NODE_ROW = 10;
@@ -532,7 +532,6 @@ const Board = () => {
   const handleMazeChange = (event) => {
     const selectedMaze = event.target.value;
     let newGrid = grid;
-    let pathList = [];
 
     if (selectedMaze === "Recursive") {
       setTimeout(() => {
@@ -551,7 +550,7 @@ const Board = () => {
       }, 100);
 
       let { mazedGrid, pathList } = backtrackDFS(newGrid, 1, 1);
-      let counter = 0;
+      let counter = 3;
 
       for (let cell of pathList) {
         let row = cell[0];
@@ -567,7 +566,6 @@ const Board = () => {
           )
         ) {
           setTimeout(() => {
-            console.log(`${row} ${col}`);
             let node = newGrid[row][col];
             node.isWall = false;
 
@@ -576,7 +574,6 @@ const Board = () => {
             element.classList.remove("node-wall");
             console.log(`node-${row}-${col} is now NOT a wall `);
           }, 50 * counter);
-
           counter++;
         }
       }
