@@ -7,8 +7,8 @@ import {
   getNodesInShortestPathOrder,
 } from "./Algorithms/dijkstra.js";
 import "./Board.css";
-import Header from "./Header.jsx";
-import Node from "./Node";
+import Header from "./Components/Header.jsx";
+import Node from "./Components/Node.jsx";
 import {
   clearPath,
   createInitialGrid,
@@ -333,98 +333,6 @@ const Board = () => {
     totalAnimationTime = 0;
     console.log("not valid path");
   };
-
-  // const visualizeDijkstra = () => {
-  //   const startNode =
-  //     grid[startCoordsRef.current[0]][startCoordsRef.current[1]];
-  //   const finishNode =
-  //     grid[finishCoordsRef.current[0]][finishCoordsRef.current[1]];
-
-  //   clearPath(visitedNodesRef.current, shortestPathNodesRef.current);
-  //   console.log("CLEARED old path");
-  //   resetNodeStates();
-  //   console.log("reset node states");
-
-  //   // Run Dijkstra's algorithm and get the path
-  //   const { visitedNodesInOrder, validPath } = dijkstra(
-  //     grid,
-  //     startNode,
-  //     finishNode
-  //   );
-  //   visitedNodesRef.current = visitedNodesInOrder;
-  //   console.log("valid path?: " + validPath);
-
-  //   // Get nodes in the shortest path order
-  //   const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-  //   shortestPathNodesRef.current = nodesInShortestPathOrder;
-
-  //   if (isVisualized) {
-  //     console.log("DISPLAYING new path");
-  //     instantAlgorithm(
-  //       validPath,
-  //       visitedNodesInOrder,
-  //       nodesInShortestPathOrder
-  //     );
-  //   } else {
-  //     console.log("ANIMATING new path");
-  //     animateAlgorithm(
-  //       validPath,
-  //       visitedNodesInOrder,
-  //       nodesInShortestPathOrder
-  //     );
-  //     console.log("total animation time is " + totalAnimationTime);
-  //   }
-
-  //   // let newGrid = grid;
-
-  //   // let logGridVisited = [];
-  //   // let logGridShortest = [];
-  //   // for (let i = 0; i < 40; i++) {
-  //   //   logGridVisited.push(newGrid[10][i].isVisited);
-  //   //   logGridShortest.push(newGrid[10][i].isInShortestPath);
-  //   // }
-  //   // console.log("new grid visited is " + JSON.stringify(logGridVisited));
-  //   // console.log("new grid shortest is " + JSON.stringify(logGridShortest));
-  // };
-
-  // const visualizeAstar = () => {
-  //   const startNode =
-  //     grid[startCoordsRef.current[0]][startCoordsRef.current[1]];
-  //   const finishNode =
-  //     grid[finishCoordsRef.current[0]][finishCoordsRef.current[1]];
-
-  //   clearPath(visitedNodesRef.current, shortestPathNodesRef.current);
-  //   resetNodeStates();
-
-  //   const { visitedNodesInOrder, validPath } = aStar(
-  //     grid,
-  //     startNode,
-  //     finishNode
-  //   );
-  //   visitedNodesRef.current = visitedNodesInOrder;
-  //   console.log("valid path?: " + validPath);
-
-  //   // Get nodes in the shortest path order
-  //   const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-  //   shortestPathNodesRef.current = nodesInShortestPathOrder;
-
-  //   if (isVisualized) {
-  //     console.log("DISPLAYING new path");
-  //     instantAlgorithm(
-  //       validPath,
-  //       visitedNodesInOrder,
-  //       nodesInShortestPathOrder
-  //     );
-  //   } else {
-  //     console.log("ANIMATING new path");
-  //     animateAlgorithm(
-  //       validPath,
-  //       visitedNodesInOrder,
-  //       nodesInShortestPathOrder
-  //     );
-  //     console.log("total animation time is " + totalAnimationTime);
-  //   }
-  // };
 
   const animateOrDisplayAlgo = () => {
     const startNode =
