@@ -1,5 +1,5 @@
 .under-header {
-  margin-top: 12px;
+  margin: 12px;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -83,9 +83,9 @@
   background-image: linear-gradient(
     to left,
     violet,
-    indigo,
-    blue,
-    green,
+    rgb(172, 57, 255),
+    rgb(0, 98, 255),
+    rgb(0, 210, 0),
     yellow,
     orange,
     red

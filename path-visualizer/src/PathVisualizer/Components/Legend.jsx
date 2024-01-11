@@ -6,7 +6,7 @@ import startIcon from "../images/node-start.png";
 
 function Legend() {
   return (
-    <div className="under-header">
+    <div className="under-header" selectable="false">
       <div className="legend">
         <div className="section-container">
           <div className="start-legend">

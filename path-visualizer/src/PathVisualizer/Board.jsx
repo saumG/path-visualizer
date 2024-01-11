@@ -141,7 +141,7 @@ const Board = () => {
       const startIconContainer = document.getElementById(
         `icon-container-${startRow}-${startCol}`
       );
-      startIconContainer.innerHTML = `<img src="${startIcon}" alt="Start" className="node-start node-icon" draggable="false" />`;
+      startIconContainer.innerHTML = `<img src="${startIcon}" alt="Start" class="node-start node-icon" draggable="false" />`;
     }
 
     if (finishNode) {
@@ -149,7 +149,7 @@ const Board = () => {
       const finishIconContainer = document.getElementById(
         `icon-container-${finishRow}-${finishCol}`
       );
-      finishIconContainer.innerHTML = `<img src="${finishIcon}" alt="Finish" className="node-finish node-icon" draggable="false" />`;
+      finishIconContainer.innerHTML = `<img src="${finishIcon}" alt="Finish" class="node-finish node-icon" draggable="false" />`;
     }
   };
 

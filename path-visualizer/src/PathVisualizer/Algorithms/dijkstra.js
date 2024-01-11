@@ -38,9 +38,9 @@ export function dijkstra(grid, startNode, finishNode) {
     const closestNode = unvisitedNodes.dequeue(); // Get the node with the shortest distance
 
     if (closestNode.isWall) {
-      console.log(
-        `${closestNode.row} + ${closestNode.col} is a wall. skipping`
-      );
+      // console.log(
+      //   `${closestNode.row} + ${closestNode.col} is a wall. skipping`
+      // );
       continue; // Skip if the node is a wall
     }
 
