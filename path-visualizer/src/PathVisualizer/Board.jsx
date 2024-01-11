@@ -20,6 +20,8 @@ import { backtrackDFS } from "./Mazes/mazes.js";
 import finishIcon from "./images/node-finish.png";
 import startIcon from "./images/node-start.png";
 
+import Legend from "./Components/Legend.jsx";
+
 // Constants for grid size
 const MAX_ROW_NUM = 21;
 const MAX_COL_NUM = 51;
@@ -38,7 +40,6 @@ const Board = () => {
   const [grid, setGrid] = useState([]);
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
   const [currentAlgorithm, setCurrentAlgorithm] = useState("Dijkstra");
-  const [currentMaze, setCurrentMaze] = useState("Maze");
 
   const [isVisualizing, setIsVisualizing] = useState(false);
   const [isVisualized, setIsVisualized] = useState(false);
@@ -140,7 +141,7 @@ const Board = () => {
       const startIconContainer = document.getElementById(
         `icon-container-${startRow}-${startCol}`
       );
-      startIconContainer.innerHTML = `<img src="${startIcon}" alt="Start" class="node-start node-icon" draggable="false" />`;
+      startIconContainer.innerHTML = `<img src="${startIcon}" alt="Start" className="node-start node-icon" draggable="false" />`;
     }
 
     if (finishNode) {
@@ -148,7 +149,7 @@ const Board = () => {
       const finishIconContainer = document.getElementById(
         `icon-container-${finishRow}-${finishCol}`
       );
-      finishIconContainer.innerHTML = `<img src="${finishIcon}" alt="Finish" class="node-finish node-icon" draggable="false" />`;
+      finishIconContainer.innerHTML = `<img src="${finishIcon}" alt="Finish" className="node-finish node-icon" draggable="false" />`;
     }
   };
 
@@ -428,7 +429,7 @@ const Board = () => {
   };
 
   const toggleMousePlacementMode = () => {
-    if (currentAlgorithm === "Astar" || currentAlgorithm === "Astar") {
+    if (currentAlgorithm === "Astar" || currentAlgorithm === "Dijkstra") {
       setIsPlacingWalls(!isPlacingWalls);
       setIsPlacingWeights(!isPlacingWeights);
       console.log(
@@ -519,6 +520,8 @@ const Board = () => {
         }}
         isPlacingWalls={isPlacingWalls}
       ></Header>
+
+      <Legend></Legend>
 
       <div className="grid" onMouseLeave={handleMouseLeaveGrid}>
         {grid.map((row, rowIdx) => (

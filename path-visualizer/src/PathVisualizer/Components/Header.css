@@ -31,13 +31,13 @@
 }
 
 .visualize-button {
-  padding: 10px 20px;
+  padding: 15px 25px;
   margin-right: 10px;
   border: 2px solid orange;
   border-radius: 8px;
   background-color: black;
   color: orange;
-  font-size: larger;
+  font-size: x-large;
   font-style: bold;
   text-transform: uppercase;
   cursor: pointer;

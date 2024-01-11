@@ -1,8 +1,8 @@
 import React from "react";
 import "./Header.css";
 
-import wallIcon from "./images/wall.png";
-import weightIcon from "./images/weight-button.png";
+import wallIcon from "../images/wall.png";
+import weightIcon from "../images/weight-button.png";
 
 function Header({
   handleAlgorithmChange,
