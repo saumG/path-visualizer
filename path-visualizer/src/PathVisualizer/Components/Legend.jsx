@@ -55,11 +55,6 @@ function Legend() {
           </div>
         </div>
       </div>
-      <div className="Flow-Game-Solver">
-        <button className="flow-button">
-          <h1>Flow Game Solver</h1>
-        </button>
-      </div>
     </div>
   );
 }
